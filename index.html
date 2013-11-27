@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="generator" content="pandoc">
+        <link rel="icon" type="image/png" href="img/favicon.png">
+        <title>Salt-stack presentation</title>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <link rel="stylesheet" href="reveal.js/css/reveal.min.css"/>
+        <style type="text/css">code{white-space: pre;}</style>
+        <link rel="stylesheet" href="reveal.js/css/theme/sky.css"/>
+        <link rel="stylesheet" href="reveal.js/lib/css/zenburn.css" />
+        <link rel="stylesheet" media="print" href="reveal.js/css/print/pdf.css" />
+        <!--[if lt IE 9]>
+        <script src="reveal.js/lib/js/html5shiv.js"></script>
+        <![endif]-->
+        <script src="js/tagcanvas.min.js"></script>
+        <script src="js/tag.js"></script>
+    </head>
+    <body>
+        <div class="reveal">
+            <div class="slides">
+                <section class="slide level2">
+                    <figure>
+                        <img src="img/crowd.png" />
+                    </figure>
+                </section>
+                <section>
+                    <section id="quest-ce-que-salt" class="titleslide slide level1">
+                        <h1>Qu'est-ce que <em>Salt</em> ?</h1>
+                    </section>
+                    <section class="slide level2">
+                        <p>C'est un gestionnaire de configuration, à l'instar de :</p>
+                        <p><img src="img/puppet.png" /> <img src="img/chef.png" /> <img src="img/ansible.png" /></p>
+                    </section>
+                </section>
+                <section>
+                    <section id="section" class="titleslide slide level1">
+                        <h1><img src="img/ooh.png" /></h1>
+                    </section>
+                    <section class="slide level2">
+                        <p><em>Salt</em> possède un certain nombre d'avantages par rapport à ses concurrents :</p>
+                        <ul>
+                            <li class="fragment">syntaxe claire (comparé à Puppet ou Cfengine)</li>
+                            <li class="fragment">rapidité</li>
+                            <li class="fragment">possibilité d'exécuter des commandes salt sur une machine distante sans pour autant :
+                            <ul>
+                                <li class="fragment">installer salt sur la machine distante</li>
+                                <li class="fragment">modifier les fichiers de description de <em>Salt</em></li>
+                            </ul></li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section id="section-1" class="titleslide slide level1">
+                        <h1><img src="img/master.png" /></h1>
+                    </section>
+                    <section class="slide level2">
+                        <p>Pas d'<del><em>interrogation</em></del></p>
+                        <h2><em>Envoi</em></h2>
+                    </section>
+                    <section class="slide level2">
+                        Le <em>master</em> envoie les <h2 style="display=inline">instructions</h2> <p>aux <em>minions</em> pour leur indiquer quoi faire.</p>
+                    </section>
+                    <section class="slide level2">
+                        <h1 style="text-align:right">ØMQ</h1>
+                        <h2 style="text-align:left"><strong><em>PUB/SUB</em></strong> sur le port 4505</h2>
+                        <h2 style="text-align:left"><strong><em>REP</em></strong> sur le port 4506</h2>
+                    </section>
+                    <section class="slide level2">
+                        <h3 id="un-diagramme-simple-comme-bonjour">Un diagramme simple comme bonjour</h3>
+                        <figure>
+                            <img src="img/diagram.png" />
+                        </figure>
+                    </section>
+                    <section class="slide level2">
+                        <h2 style="display:inline">MessagePack</h2>
+                        <p>pour sérialiser les messages</p>
+                        <ul>
+                            <li class="fragment">format binaire</li>
+                            <li class="fragment">structures de données simples</li>
+                            <li class="fragment">compact</li>
+                        </ul>
+                    </section>
+                    <section class="slide level2">
+                        Tout est <h2 style="display:inline">chiffré </h2>
+                    </section>
+                    <section class="slide level2">
+                        <p style="text-align:left">Il utilise d'abord des <h2 style="display:inline">clés publiques </h2> pour l'authentification</p>
+                        <br><br>
+                        <p style="text-align:right">Le <em>master</em> doit connaître les clés publiques des <em>minions</em></p>
+                    </section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline">Puis, il utilise <h2 style="display:inline">AES</h2> pour la communication</p>
+                        <br><br><br>
+                        <p style="text-align:right">(symétrique, plus rapide)</p>
+                    </section>
+                    <section class="slide level2">
+                        <p>Comment accepter les clés des <em>minions</em> ?</p>
+                        <pre><code class="no-highlight"># salt-key -L
+Accepted Keys:
+Unaccepted Keys:
+minion_1
+Rejected Keys:
+# salt-key -a minion_1
+The following keys are going to be accepted:
+Unaccepted Keys:
+minion_1
+Proceed? [n/Y] y
+Key for minion minion_1 accepted.</code></pre>
+                    </section>
+                    <section class="slide level2">
+                        <figure>
+                            <img src="img/allons.jpg" />
+                        </figure>
+                        <pre><code class="no-highlight"># salt 'minion_1' test.ping
+minion_1:
+    True</code></pre>
+                    </section>
+                </section>
+                <section>
+                    <section id="section-2" class="titleslide slide level1"><h1><img src="img/minion.png" /></h1></section>
+                    <section class="slide level2">
+                        <h3 id="machines-sous-contrôle">Machines sous contrôle</h3>
+                        <figure>
+                            <img src="img/controlled.jpeg" />
+                        </figure>
+                    </section>
+                    <section class="slide level2">
+                        <p>Elles recoivent leurs intructions via</p>
+                        <h2 style="text-align:right;"><em>PUB</em>/<em>SUB</em> <em>ZeroMQ</em></h2>
+                    </section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline">Possibilité de configuration <h2 style="display:inline"><strong>sans</strong> <em>master</em></h2></p>
+                        <br>
+                        <p style="text-align:right">(avec <em>salt-call</em>)</p>
+                    </section>
+                </section>
+                <section>
+                    <section id="section-3" class="titleslide slide level1"><h1><img src="img/sonic.png" /></h1></section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline">Ils fournissent les <h2 style="display:inline">fonctionnalités</h2></p>
+                    </section>
+                    <section class="slide level2" data-state="gogogo">
+                        <div id="myCanvasContainer">
+                            <canvas width="500" height="400" id="myCanvas">
+                                <p>
+                                pip, aliases, ssh, pam, mount, upstart, apt, iptables, mysql, quota, file
+                                </p>
+                                <ul>
+                                    <li><a href="">pip</a></li>
+                                    <li><a href="">aliases</a></li>
+                                    <li><a href="">ssh</a></li>
+                                    <li><a href="">pam</a></li>
+                                    <li><a href="">mount</a></li>
+                                    <li><a href="">upstart</a></li>
+                                    <li><a href="">apt</a></li>
+                                    <li><a href="">iptables</a></li>
+                                    <li><a href="">mysql</a></li>
+                                    <li><a href="">quota</a></li>
+                                    <li><a href="">file</a>
+                                </canvas>
+                            </div>
+                            </li>
+                        </ul>
+                    </section>
+                    <section class="slide level2">
+                        <p>Exécutez les modules en <em>CLI</em> !</p>
+                        <pre><code class="no-highlight"># salt '*' cmd.run 'ls /'
+ …</pre></code>
+                        <pre><code class="no-highlight"># salt '*' state.highstate
+ …</pre></code>
+                    </section>
+                </section>
+                <section>
+                    <section id="section-4" class="titleslide slide level1"><h1><img src="img/states.png" /></h1></section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline">C'est ce qu'on <h2 style="display:inline">gère</h2> ou <h2 style="display:inline">configure</h2> sur les <h2 style="display:inline"><em>minions</em></h2></p>
+                    </section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline">Les <em>states</em> ne sont que des <h2 style="display:inline">données</h2></p>
+                        <br><br>
+                        <p style="text-align:right">habituellement en YAML</p>
+                    </section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline">Ils correspondent <em>généralement</em> à des fonctions des <h2 style="display:inline">modules</h2></p>
+                    </section>
+                    <section class="slide level2">
+                        <p>Comprendre les <em>states</em></p>
+                        <pre><code class="django">/etc/munin/munin.conf:
+  file:
+    - managed
+    - template: jinja
+    - user: root
+    - require: pkg.munin</pre></code>
+                    </section>
+                    <section class="slide level2">
+                        <pre><code class="django">munin-node:
+  pkg.installed:
+    - name: munin-node
+  file:
+    - managed
+    - name: /etc/munin/munin-node.conf
+    - template: jinja
+    - user: root
+    - require:
+    - pkg: munin
+  service:
+    - running
+    - enable: True
+    - watch:
+    - file: /etc/munin/munin-node.conf</pre></code>
+                    </section>
+                    <section class="slide level2">
+                        <p>Il y a un paquet de directives !</p>
+                        <ul>
+                            <li class="fragment"><em>require</em></li>
+                            <li class="fragment"><em>extend</em></li>
+                            <li class="fragment"><em>watch</em></li>
+                            <li class="fragment"><em>include</em></li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section id="section-5" class="titleslide slide level1"><h1><img src="img/returners.png" /></h1></section>
+                    <section class="slide level2">
+                        <p>Où <h2 style="text-align:left;display:inline">sauver</h2> ce que <h2 style="text-align:left;display:inline">retournent</h2> les <h2 style="text-align:left;display:inline"><em>minions</em> ?</h2>
+                        <ul>
+                            <li class="fragment"><em>STDOUT</em></li>
+                            <li class="fragment"><em>MongoDB</em></li>
+                            <li class="fragment"><em>Redis</em></li>
+                            <li class="fragment"><em>SQL DB</em></li>
+                        </ul></p>
+                    </section>
+                </section>
+                <section>
+                    <section id="section-6" class="titleslide slide level1"><h1><img src="img/renderers.png" /></h1></section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline"><h2 style="display:inline">Langage</h2> de la <h2 style="display:inline">configuration</h2> des <em>states</em></p>
+                        <ul>
+                            <li class="fragment">YAML</li>
+                            <li class="fragment">JSON</li>
+                            <li class="fragment">python</li>
+                            <li class="fragment">…</li>
+                        </ul>
+                    </section>
+                </section>
+                <section>
+                    <section id="section-7" class="titleslide slide level1"><h1><img src="img/grains.png" /></h1></section>
+                    <section class="slide level2">
+                        <h2 style="display:inline;text-align:left;">Configuration de la machine</h2>
+                        <br><br>
+                        <p style="text-align:right">peuplée au début</p>
+                    </section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline">Utilisation des grains</p>
+                        <pre><code class="django">{% if grains["os"] == 'RedHat' %}
+httpd:
+  pkg:
+    - installed
+{% elif grains["os"] == 'Debian' %}
+apache2:
+  pkg:
+    - installed
+{% endif %}</pre></code>
+                    </section>
+                    <section class="slide level2">
+                        <p>Liste des grains</p>
+                        <pre><code class="no-highlight">$ salt '*' grains.ls
+…</pre></code>
+                        <p>On peut les utiliser n'importe où</p>
+                        <pre><code class="django">dev:
+  'os:Debian':
+    - match: grain
+    - python_server</pre></code>
+                    </section>
+                </section>
+                <section>
+                    <section id="section-8" class="titleslide slide level1"><h1><img src="img/pillar.png" /></h1></section>
+                    <section class="slide level2">
+                        <p style="text-align:left">Pensez aux <em>pillar</em> comme à des </p>
+                        <h2 style="text-align:right;">ensembles de variables</h2>
+                    </section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline">Ce sont des <h2 style="text-align:left;display:inline">données</h2></p>
+                        <p>tout comme les <em>states</em></p>
+                    </section>
+                    <section class="slide level2">
+                        <p>Créer un <em>pillar</em> pour <em>salt</em>…</p>
+                        <pre><code class="django">{% if grains['os'] == 'RedHat' %}
+apache: httpd
+git: git
+{% elif grains['os'] == 'Debian' %}
+apache: apache2
+git: git-core
+{% endif %}</pre></code>
+                    </section>
+                    <section class="slide level2">
+                        <p>et son utilisation !</p>
+                        <pre><code class="django">apache:
+  pkg:
+    - installed
+    - name: {{ pillar['apache'] }}</pre></code>
+                    </section>
+                </section>
+                <section>
+                    <section id="section-9" class="titleslide slide level1"><h1><img src="img/more.png" /></h1></section>
+                    <section class="slide level2">
+                        <ul>
+                            <li class="fragment"><h3>salt-bootstrap</h3></li>
+                            <li class="fragment"><h3>salt-cloud</h3></li>
+                            <li class="fragment"><h3>salt-vagrant</h3></li>
+                            <li class="fragment"><h3>halite</h3></li>
+                        </ul>
+                    </section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline">Possibilité de développer ses propres <h2 style="text-align:left;display:inline">modules</h2> comme des modules <h2 style="text-align:left;display:inline">python</h2></p>
+                    </section>
+                    <section class="slide level2">
+                        <p style="text-align:left;display:inline">Pareil pour les <h2 style="text-align:left;display:inline"><em>states</em></h2></p>
+                    </section>
+                    <section class="slide level2" data-state="questions">
+                        <h2>Questions ?</h2>
+                        <video src="video/knock.mp4" id="knock"></video>
+                    </section>
+                </section>
+                <section>
+                    <section id="section-10" class="titleslide slide level1"><h1><img src="img/zatsole.svg" /></h1></section>
+                    <section class="slide level2">
+                        <figure>
+                            <img src="img/thank.png" />
+                        </figure>
+                        <p style="text-align:right;">http://github.com/ldidry</p>
+                        <p style="text-align:right;">http://twitter.com/framasky</p>
+                        <p style="text-align:right;">http://slides.fiat-tux.fr</p>
+                        <br>
+                        <p style="font-size:18px;text-align:left;">Honteusement pompé sur la présentation de <a href="https://speakerdeck.com/igalarzab/salt-stack">Jose Ignacio Galarza</a></p>
+                    </section>
+                </section>
+            </div>
+        </div>
+        <script src="reveal.js/lib/js/head.min.js"></script>
+        <script src="reveal.js/js/reveal.min.js"></script>
+        <script>
+            Reveal.initialize({
+                controls: true,
+                progress: true,
+                history: true,
+                center: true,
+                theme: Reveal.getQueryHash().theme,
+                transition: Reveal.getQueryHash().transition || 'default',
+                dependencies: [
+                    { src: 'reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+                    { src: 'reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+                    { src: 'reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+                    { src: 'reveal.js/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+                ]});
+        </script>
+    </body>
+</html>
