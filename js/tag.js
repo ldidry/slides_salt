@@ -12,8 +12,5 @@ window.onload = function() {
             document.getElementById('myCanvasContainer').style.display = 'none';
         }
     });
-    Reveal.addEventListener( 'questions', function() {
-        document.getElementById('knock').play();
-    });
 };
 
