@@ -192,6 +192,7 @@ minion_1:
                         <pre><code class="django">/etc/munin/munin.conf:
   file:
     - managed
+    - source: salt://munin/files/munin.conf
     - template: jinja
     - user: root
     - require: pkg.munin</pre></code>
@@ -203,6 +204,7 @@ minion_1:
   file:
     - managed
     - name: /etc/munin/munin-node.conf
+    - source: salt://munin/files/munin.conf
     - template: jinja
     - user: root
     - require:
