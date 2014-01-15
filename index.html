@@ -208,12 +208,12 @@ minion_1:
     - template: jinja
     - user: root
     - require:
-    - pkg: munin
+      - pkg: munin
   service:
     - running
     - enable: True
     - watch:
-    - file: /etc/munin/munin-node.conf</pre></code>
+      - file: /etc/munin/munin-node.conf</pre></code>
                     </section>
                     <section class="slide level2">
                         <p>Il y a un paquet de directives !</p>
